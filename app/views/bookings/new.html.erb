@@ -1,0 +1,65 @@
+<!-- app/views/bookings/new.html.erb -->
+
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-4xl font-bold mb-8 text-center">Book Your Flight</h1>
+
+  <div class="bg-base-200 rounded-box p-6 mb-8 shadow-lg">
+    <h2 class="text-2xl font-semibold mb-4">Flight Details</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="stat">
+        <div class="stat-title">Flight Number</div>
+        <div class="stat-value"><%= @flight.number %></div>
+      </div>
+      <div class="stat">
+        <div class="stat-title">Departure</div>
+        <div class="stat-value"><%= @flight.departure_airport.code %></div>
+        <div class="stat-desc"><%= @flight.departure_time.strftime("%B %d, %Y at %I:%M %p") %></div>
+      </div>
+      <div class="stat">
+        <div class="stat-title">Arrival</div>
+        <div class="stat-value"><%= @flight.arrival_airport.code %></div>
+        <div class="stat-desc"><%= @flight.arrival_time.strftime("%B %d, %Y at %I:%M %p") %></div>
+      </div>
+    </div>
+  </div>
+
+  <%= form_with(model: @booking, local: true, class: "bg-base-100 rounded-box p-6 shadow-lg") do |f| %>
+  <% if @booking.errors.any? %>
+    <div class="alert alert-error">
+      <h2><%= pluralize(@booking.errors.count, "error") %> prohibited this booking from being saved:</h2>
+      <ul>
+        <% @booking.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+    <h2 class="text-2xl font-semibold mb-4">Passenger Information</h2>
+    
+    <%= f.hidden_field :flight_id, value: @flight.id %>
+
+    <% @booking.passengers.each_with_index do |passenger, index| %>
+      <div class="divider">Passenger <%= index + 1 %></div>
+      <%= f.fields_for :passengers, passenger do |p| %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="form-control">
+            <%= p.label :first_name, class: "label" %>
+            <%= p.text_field :first_name, class: "input input-bordered w-full" %>
+          </div>
+          <div class="form-control">
+            <%= p.label :last_name, class: "label" %>
+            <%= p.text_field :last_name, class: "input input-bordered w-full" %>
+          </div>
+        </div>
+        <div class="form-control mb-4">
+          <%= p.label :email, class: "label" %>
+          <%= p.email_field :email, class: "input input-bordered w-full" %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <div class="mt-6">
+      <%= f.submit "Confirm Booking", class: "btn btn-primary w-full" %>
+    </div>
+  <% end %>
+</div>~

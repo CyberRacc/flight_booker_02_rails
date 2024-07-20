@@ -1,0 +1,79 @@
+<!-- app/views/flights/index.html.erb -->
+
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-4xl font-bold mb-8 text-center">Find Your Flight</h1>
+
+  <!-- Search Form -->
+    <div class="bg-base-200 rounded-box p-6 mb-8 shadow-lg">
+    <h2 class="text-2xl font-semibold mb-4">Search Flights</h2>
+    <%= form_with url: flights_path, method: :get, local: true, class: "space-y-4" do |f| %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="form-control">
+            <%= f.label :departure_airport, class: "label" %>
+            <%= f.select :departure_airport, 
+                        options_for_select(Airport.all.map { |a| ["#{a.code} - #{a.name}", a.id] }, 
+                        params[:departure_airport]), 
+                        { prompt: "Select departure" }, 
+                        class: "select select-bordered w-full" %>
+        </div>
+        <div class="form-control">
+            <%= f.label :arrival_airport, class: "label" %>
+            <%= f.select :arrival_airport, 
+                        options_for_select(Airport.all.map { |a| ["#{a.code} - #{a.name}", a.id] }, 
+                        params[:arrival_airport]), 
+                        { prompt: "Select arrival" }, 
+                        class: "select select-bordered w-full" %>
+        </div>
+        <div class="form-control">
+            <%= f.label :departure_date, class: "label" %>
+            <%= f.date_field :departure_date, class: "input input-bordered w-full", value: params[:departure_date] %>
+        </div>
+        <div class="form-control">
+            <%= f.label :passengers, class: "label" %>
+            <%= f.number_field :passengers, class: "input input-bordered w-full", min: 1, max: 4, value: params[:passengers] || 1 %>
+        </div>
+        </div>
+        <%= f.submit "Search Flights", class: "btn btn-primary mt-4" %>
+    <% end %>
+    </div>
+
+  <!-- Search Results -->
+  <% if @flights.present? %>
+    <div class="bg-base-100 rounded-box p-6 shadow-lg">
+      <h2 class="text-2xl font-semibold mb-4">Available Flights</h2>
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>Flight Number</th>
+              <th>Departure</th>
+              <th>Arrival</th>
+              <th>Date</th>
+              <th>Price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @flights.each do |flight| %>
+              <tr class="hover">
+                <td><%= flight.number %></td>
+                <td><%= flight.departure_airport.code %></td>
+                <td><%= flight.arrival_airport.code %></td>
+                <td><%= flight.departure_time.strftime("%B %d, %Y") %></td>
+                <td><%= number_to_currency(flight.price) %></td>
+                <td>
+                    <%= button_to "Book Flight", create_flight_flights_path, method: :post, params: { flight: flight.attributes, passengers: params[:passengers] }, class: "btn btn-sm btn-secondary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% elsif params[:departure_airport].present? %>
+    <div class="alert alert-info">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <span>No flights found matching your criteria. Please try different search parameters.</span>
+    </div>
+  <% end %>
+</div>

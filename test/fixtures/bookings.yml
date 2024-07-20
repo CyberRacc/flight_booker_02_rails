@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  flight: one
+  passenger: one
+  booking_date: 2024-07-20 09:54:55
+  seat_number: MyString
+
+two:
+  flight: two
+  passenger: two
+  booking_date: 2024-07-20 09:54:55
+  seat_number: MyString
