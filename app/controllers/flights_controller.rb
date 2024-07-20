@@ -17,6 +17,10 @@ class FlightsController < ApplicationController
         flash.now[:notice] = "No flights found for the selected route and date."
       end
     end
+
+    respond_to do |format|
+      format.json { render :json => @airports }
+    end
   end
 
   def create_flight
